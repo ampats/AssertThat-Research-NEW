@@ -1,6 +1,7 @@
 import requests
 import os
 import zipfile
+import base64
 from github import Github
 from dotenv import load_dotenv
 
@@ -8,6 +9,7 @@ load_dotenv()
 # AssertThat credentials
 at_access_key = os.getenv("AT_ACCESS_KEY")
 at_secret_key = os.getenv("AT_SECRET_KEY")
+at_encoded_credentials = os.getenv("AT_ENCODED_CREDENTIALS")
 at_project_id = os.getenv("AT_PROJECT_ID")
 at_path = 'https://bdd.assertthat.app/rest/api/1/project/' + at_project_id + '/features'
 
@@ -28,13 +30,17 @@ if not os.path.exists(feature_directory):
 
 # Fetch feature files from AssertThat
 response = requests.get(
-    f'{at_path}/project/{at_project_id}/client/features',
-    headers={'Authorization': f'Basic {at_access_key}:{at_secret_key}'}
+    f'{at_path}',
+    headers={'Authorization': 'Basic NDc5OWZkYThiMzNhMDcxMGM5Mjg5OGYxMzI0MDAyNDAxZDk3ZWI2NmFkZmYyOTkxZGViOGM1ZDNiMTdmODczNDpiZmIwMDFjZWMzNjBlMDA2ZDdkYWM4MTY0MWE2YTVkZDc4MmRhZGMwM2VkMTA5M2EyMTAzOGI1ZDlmNmE0M2Rl'}
 )
+
 # response = requests.get(at_path,
 #     auth=(at_access_key, at_secret_key)
 # ) 
 # NOTE: The example above is for Jira Data Center. In case you use cloud version the following URL should be used for downloading features: https://bdd.assertthat.app/rest/api/1/project/YOUR_ASSERT_THAT_PROJECT_ID/features
+print(f"Status Code: {response.status_code}")
+print(f"Response Headers: {response.headers}")
+print(f"Response Text: {response.text}")
 
 if response.status_code == 200:
     # Save the feature files ZIP to the local directory
@@ -59,7 +65,7 @@ if response.status_code == 200:
                         path=file_path_within_repo,
                         message=f'Update feature file: {file}',
                         content=content,
-                        branch='main'
+                        branch='sync-features-jira-github'
                     )
 
     # Clean up (delete the local files)
