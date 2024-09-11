@@ -31,7 +31,7 @@ if not os.path.exists(feature_directory):
 # Fetch feature files from AssertThat
 response = requests.get(
     f'{at_path}',
-    headers={'Authorization': 'Basic ' + ''}
+    headers={'Authorization': 'Basic ' + at_encoded_credentials}
 )
 
 # response = requests.get(at_path,
